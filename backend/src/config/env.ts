@@ -8,6 +8,8 @@ export const env = {
 };
 
 export function requireMongoUri(): string {
-  if (!env.mongoUri) throw new Error('MONGODB_URI is required');
+  if (!env.mongoUri) {
+    throw new Error('MONGODB_URI is required');
+  }
   return env.mongoUri;
 }

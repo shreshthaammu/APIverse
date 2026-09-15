@@ -1,9 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { isValidObjectId } from 'mongoose';
 import * as service from '../services/resourceService.js';
+import { isDemoMode } from '../config/demoData.js';
 import { failure, success } from '../utils/response.js';
-const guard = (req: Request, res: Response) => { if (!isValidObjectId(req.params.id)) { failure(res, 'Invalid project id', 'INVALID_ID', 400); return false; } return true; };
-const handle = (fn: (req: Request) => Promise<unknown>, status = 200) => async (req: Request, res: Response, next: NextFunction) => { try { if (!guard(req, res)) return; success(res, await fn(req), status); } catch (e) { next(e); } };
+const guard = (req: Request, res: Response) => { if (!isDemoMode() && !isValidObjectId(req.params.id)) { failure(res, 'Invalid project id', 'INVALID_ID', 400); return false; } return true; };
+const handle = (fn: (req: Request) => Promise<unknown> | unknown, status = 200) => async (req: Request, res: Response, next: NextFunction) => { try { if (!guard(req, res)) return; success(res, await fn(req), status); } catch (e) { next(e); } };
 export const resourceRoutes = Router({ mergeParams: true });
 resourceRoutes.get('/versions', handle((r) => service.versions(r.params.id))); resourceRoutes.get('/versions/:versionId', handle((r) => service.version(r.params.id, r.params.versionId))); resourceRoutes.post('/versions', handle((r) => service.createVersion(r.params.id, r.body), 201));
 resourceRoutes.get('/agent-activity', handle((r) => service.agents(r.params.id))); resourceRoutes.get('/agent-activity/:executionId', handle((r) => service.agent(r.params.id, r.params.executionId))); resourceRoutes.post('/agent-activity', handle((r) => service.createAgent(r.params.id, r.body), 201));
