@@ -1,0 +1,3 @@
+import { Schema, model } from 'mongoose';
+const schema = new Schema({ projectId: { type: Schema.Types.ObjectId, ref: 'Project', required: true, index: true }, agent: { type: String, required: true }, status: { type: String, enum: ['pending', 'running', 'completed', 'failed'], default: 'pending' }, input: Schema.Types.Mixed, output: Schema.Types.Mixed, duration: Number, startedAt: { type: Date, default: Date.now, index: true }, completedAt: Date }, { timestamps: true });
+export const AgentExecution = model('AgentExecution', schema);

@@ -1,0 +1,10 @@
+import { Request, Response, NextFunction } from 'express';
+import { isValidObjectId } from 'mongoose';
+import * as service from '../services/apiService.js';
+import { failure, success } from '../utils/response.js';
+const valid = (req: Request) => isValidObjectId(req.params.id) && (!req.params.apiId || isValidObjectId(req.params.apiId));
+export async function list(req: Request, res: Response, next: NextFunction) { try { if (!isValidObjectId(req.params.id)) return failure(res, 'Invalid project id', 'INVALID_ID', 400); success(res, await service.listApis(req.params.id)); } catch (e) { next(e); } }
+export async function get(req: Request, res: Response, next: NextFunction) { try { if (!valid(req)) return failure(res, 'Invalid id', 'INVALID_ID', 400); const item = await service.getApi(req.params.id, req.params.apiId); item ? success(res, item) : failure(res, 'API endpoint not found', 'API_NOT_FOUND', 404); } catch (e) { next(e); } }
+export async function create(req: Request, res: Response, next: NextFunction) { try { if (!isValidObjectId(req.params.id)) return failure(res, 'Invalid project id', 'INVALID_ID', 400); success(res, await service.createApi(req.params.id, req.body), 201); } catch (e) { next(e); } }
+export async function update(req: Request, res: Response, next: NextFunction) { try { if (!valid(req)) return failure(res, 'Invalid id', 'INVALID_ID', 400); const item = await service.updateApi(req.params.id, req.params.apiId, req.body); item ? success(res, item) : failure(res, 'API endpoint not found', 'API_NOT_FOUND', 404); } catch (e) { next(e); } }
+export async function remove(req: Request, res: Response, next: NextFunction) { try { if (!valid(req)) return failure(res, 'Invalid id', 'INVALID_ID', 400); const item = await service.deleteApi(req.params.id, req.params.apiId); item ? success(res, item) : failure(res, 'API endpoint not found', 'API_NOT_FOUND', 404); } catch (e) { next(e); } }

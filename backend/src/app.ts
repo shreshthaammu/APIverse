@@ -1,0 +1,16 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import { env } from './config/env.js';
+import { projectRoutes } from './routes/projectRoutes.js';
+import { apiRoutes } from './routes/apiRoutes.js';
+import { changeRoutes } from './routes/changeRoutes.js';
+import { resourceRoutes } from './routes/resourceRoutes.js';
+import { openapiRoutes } from './routes/openapiRoutes.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { notFound } from './middleware/notFound.js';
+export const app = express();
+app.use(helmet()); app.use(cors({ origin: env.clientUrl })); app.use(express.json({ limit: '2mb' }));
+app.get('/api/health', (_req, res) => res.json({ status: 'ok', message: 'API Documentation Agent backend is running' }));
+app.use('/api/projects', projectRoutes); app.use('/api/projects/:id/apis', apiRoutes); app.use('/api/projects/:id/changes', changeRoutes); app.use('/api/projects/:id', resourceRoutes); app.use('/api/openapi', openapiRoutes);
+app.use(notFound); app.use(errorHandler);

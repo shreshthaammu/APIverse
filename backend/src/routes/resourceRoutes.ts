@@ -1,0 +1,11 @@
+import { Router, Request, Response, NextFunction } from 'express';
+import { isValidObjectId } from 'mongoose';
+import * as service from '../services/resourceService.js';
+import { failure, success } from '../utils/response.js';
+const guard = (req: Request, res: Response) => { if (!isValidObjectId(req.params.id)) { failure(res, 'Invalid project id', 'INVALID_ID', 400); return false; } return true; };
+const handle = (fn: (req: Request) => Promise<unknown>, status = 200) => async (req: Request, res: Response, next: NextFunction) => { try { if (!guard(req, res)) return; success(res, await fn(req), status); } catch (e) { next(e); } };
+export const resourceRoutes = Router({ mergeParams: true });
+resourceRoutes.get('/versions', handle((r) => service.versions(r.params.id))); resourceRoutes.get('/versions/:versionId', handle((r) => service.version(r.params.id, r.params.versionId))); resourceRoutes.post('/versions', handle((r) => service.createVersion(r.params.id, r.body), 201));
+resourceRoutes.get('/agent-activity', handle((r) => service.agents(r.params.id))); resourceRoutes.get('/agent-activity/:executionId', handle((r) => service.agent(r.params.id, r.params.executionId))); resourceRoutes.post('/agent-activity', handle((r) => service.createAgent(r.params.id, r.body), 201));
+resourceRoutes.get('/deployments', handle((r) => service.deployments(r.params.id))); resourceRoutes.get('/deployments/:deploymentId', handle((r) => service.deployment(r.params.id, r.params.deploymentId))); resourceRoutes.post('/deployments', handle((r) => service.createDeployment(r.params.id, r.body), 201));
+resourceRoutes.post('/scan', handle((r) => service.scan(r.params.id))); resourceRoutes.get('/scan/status', handle((r) => service.scanStatus(r.params.id)));

@@ -1,0 +1,6 @@
+{
+  "name": "APIverse",
+  "description": "Autonomous API Documentation Agent that detects backend code changes, keeps OpenAPI specifications synchronized, detects breaking changes, and automatically publishes documentation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
