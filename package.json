@@ -10,7 +10,7 @@
     "backend:start": "node backend/dist/server.js",
     "seed": "tsx backend/src/seed.ts",
     "build": "npm run backend:build && vite build",
-    "start": "npm run backend:build && node backend/dist/server.js",
+    "start": "npm run build && node backend/dist/server.js",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
